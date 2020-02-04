@@ -1,0 +1,30 @@
+Happy chinese new year.
+Printing clockwise:
+[Idx 0:happy]
+   |
+   v
+[Idx 1:Chinese]
+   |
+   v
+[Idx 2:New]
+   |
+   v
+[Idx 3:Year]
+   |
+   v
+[Idx 4:happy]
+
+Printing counter-clockwise:
+[Idx 4:happy]
+   |
+   v
+[Idx 3:Year]
+   |
+   v
+[Idx 2:New]
+   |
+   v
+[Idx 1:Chinese]
+   |
+   v
+[Idx 0:happy]

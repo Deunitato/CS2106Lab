@@ -14,7 +14,7 @@ void insert_node_before(list *lst, int index, char *word)
 {	
 	// TODO
 	//create node first
-	struct NODE *nodePtr;
+	node *nodePtr;
 	nodePtr = (node*)malloc(sizeof(node));
 	(*nodePtr).word = word; //assign value
 
@@ -62,13 +62,25 @@ void insert_node_after(list *lst, int index, char *word)
 
 char *list_to_sentence(list *lst)
 {
-	// TODO
-	int DEST_SIZE = 400;
 	node *nodeHead = (*lst).head;
 	node *nodePtr = (*lst).head;
 	int isFirst = 1;
+	int sizeofStr =1;
 	char *sentence;
-    sentence = (char*) malloc(11 * sizeof(char));
+
+
+	//count the size
+	nodePtr = (*nodePtr).next;
+	while((nodePtr)!=nodeHead){
+		sizeofStr++;
+		nodePtr = (*nodePtr).next;
+	}
+
+	//reinit
+	nodeHead = (*lst).head;
+	nodePtr = (*lst).head;
+
+    sentence = (char*) malloc(sizeofStr*11 * sizeof(char));
 
 	//copy
 	do{
@@ -94,7 +106,7 @@ char *list_to_sentence(list *lst)
 
     //fullstop
 	sentence[strlen(sentence)-1] = '.';
-	strcat(sentence, "\0");
+    strcat(sentence, "\0");
     return sentence; // Change this line accordingly
 }
 
