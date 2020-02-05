@@ -80,7 +80,7 @@ char *list_to_sentence(list *lst)
 	nodeHead = (*lst).head;
 	nodePtr = (*lst).head;
 
-    sentence = (char*) malloc(sizeofStr*11 * sizeof(char));
+    sentence = (char*) malloc(sizeofStr*11 * sizeof(char) + 1);
 
 	//copy
 	do{
@@ -146,14 +146,17 @@ void delete_list(list *lst)
 {
 	// TODO
 	//delete everything
-	node *nodePtr = (*lst).head;
-	node *nodeHead = nodePtr;
+	node *nodeHead = (*lst).head;
+	node *nodePtr = nodeHead->next;
 	//check if next is me
-	while((nodePtr)!=nodeHead){
-		
+	do{
 		free((*nodePtr).word);
-		free(nodePtr);
-	}
+		nodePtr = nodePtr->next;	
+
+	}while((nodePtr)!=nodeHead);
+
+	free(nodeHead);
+	free(nodePtr);
 	 (*lst).head = NULL;
 
 }

@@ -12,57 +12,90 @@ int power(int, int);
 matrix *create_matrix(int num_rows, int num_cols)
 {   
     matrix *newMat;
-    int** myData;
     //newMat = (matrix*)malloc(sizeof(int) * num_cols *num_cols);
     newMat = (matrix*)malloc(sizeof(matrix));
     //set values
     newMat->num_cols = num_cols;
     newMat -> num_rows = num_rows;
 
-    // Allocate the columns
-    myData = (int**)malloc(num_cols * sizeof(int*));
+    // Allocate the row
+     int **myData=(int**)malloc(num_rows*sizeof(int*));
 
-    //init to 0
-    for(int i=0; i< num_rows ; i++){
-        myData[i] = (int*)malloc(sizeof(int));
-        myData[i] = 0;
+    //allocate cool
+    for(int i = 0; i<num_rows ; i++){
+      myData[i] = (int*)malloc(sizeof(int) * num_cols);
     }
 
+    //reassing
+    for(int i=0; i< num_rows ; i++){
+        for(int j =0; j <num_cols ; j++){
+           // myData[i][j] = (int*)malloc(sizeof(int));
+            myData[i][j] = 0;
+        }
+    }
     //set it to matrix
     newMat->data = myData;
     // TODO
     return newMat;
 }
-
 void add_row(matrix *mat, int *row)
 {
     // TODO
     //add more rows to current matrix
-    int** myData = mat->data;
-    mat->num_rows = (mat->num_rows)++; //increase
-    int numberRows = mat->num_rows;
-    //add space and realloc it
-    myData[numberRows] = (int*)realloc(row, (mat->num_cols)*sizeof(int));
-    /*for (int i = 0; i < (mat->num_cols); i++){
-       myData[numberRows][i] = (int*)realloc((int)row[i], numberRows*sizeof(int));
-    }*/
+     int** newData = (int**)malloc((mat->num_rows +1)*sizeof(int*));
+     int** arr = mat->data;
+     int num_rows = mat->num_rows;
+     int num_cols = mat->num_cols;
+
+    for(int i =0 ; i <=num_rows ; i++){
+        newData[i] = (int*)malloc((mat->num_cols)*sizeof(int));
+        for(int j = 0; j < num_cols ; j++){
+            if(i==num_rows){
+                newData[i][j] = row[j];
+            }
+            else{
+                newData[i][j] = arr[i][j];
+            }
+        }
+    }
+    //add the row
+    // newData[num_rows-1] = (int*)realloc(*row, sizeof(row));
+
+     //throw away the old
+        for(int i = 0 ; i < num_rows ; ++i){
+           free(mat->data[i]);
+        }
+        // Deallocate the columns
+       free(mat->data);
+       mat->data = newData;
+       mat->num_rows = num_rows + 1; //increase
 }
 
 void add_col(matrix *mat, int *col)
 {
     // TODO
-     int** myData = mat->data;
-     mat->num_cols = (mat->num_cols)++; //increase
-     int numberCol = mat->num_cols;
-     myData = (int**)realloc(col, (mat->num_rows)*sizeof(int*));
+     int** arr = mat->data;
+     int num_rows = mat->num_rows;
+     int num_cols = mat->num_cols;
+     int** newData = (int**)malloc((mat->num_rows)*sizeof(int*));;
 
-    /*for (int i = 0; i < (mat->num_rows); i++){
-       myData[i][numberCol] = (int*)realloc((int)col[i], numberCol*sizeof(int));
-    }*/
+     for(int i =0 ; i < num_rows ; i ++){
+         newData[i] = (int*)malloc((mat->num_cols + 1)*sizeof(int));
+         for(int j =0 ; j <num_cols ; j ++){
+             newData[i][j] = arr[i][j];
+         }
+         newData[i][num_cols] = col[i];
+     }
 
-
-    
+      for(int i = 0 ; i < num_rows-1 ; ++i){
+           free(mat->data[i]);
+        }
+        // Deallocate the columns
+       free(mat->data);
+       mat->data = newData;
+       mat->num_cols = num_cols + 1; //increase
 }
+
 
 void increment(matrix *mat, int num)
 {
@@ -73,6 +106,7 @@ void increment(matrix *mat, int num)
             myData[i][j] = myData[i][j] + num;
         }
     }
+
 }
 
 void scalar_multiply(matrix *mat, int num)
@@ -84,6 +118,7 @@ void scalar_multiply(matrix *mat, int num)
             myData[i][j] = myData[i][j] * num;
         }
     }
+
 }
 
 void scalar_divide(matrix *mat, int num)
@@ -95,6 +130,7 @@ void scalar_divide(matrix *mat, int num)
             myData[i][j] = myData[i][j] / num;
         }
     }
+
 }
 
 void scalar_power(matrix *mat, int num)
@@ -103,7 +139,7 @@ void scalar_power(matrix *mat, int num)
      int** myData = mat->data;
     for(int i = 0; i < (mat->num_rows) ; i++){
         for(int j =0 ; j < (mat-> num_cols) ; j++){
-            myData[i][j] = power(myData[i][j],num);
+            myData[i][j] = power(num, myData[i][j]);
         }
     }
 }
@@ -115,7 +151,7 @@ int power(int pow, int num){
     }
 
     for(int i  =1 ; i < pow ; i++ ){
-        ans = ans * ans;
+        ans = ans * num;
     }
     return ans;
     
@@ -124,20 +160,14 @@ int power(int pow, int num){
 void delete_matrix(matrix *mat)
 {
     // TODO
-    int** myData = mat->data;
-   /* for(int i = 0; i < (mat->num_rows) ; i++){
-        for(int j =0 ; j < (mat-> num_cols) ; j++){
-            free(myData[i][j]);
-    }*/
 
-    int m = mat->num_cols;
-    int n = mat->num_rows;
-    for(int i = 0 ; i < (n+m) ; ++i){
-       free(myData[i]);
+    int rows = mat->num_rows;
+    for(int i = 0 ; i < rows ; i++){
+       free(mat->data[i]);
     }
 
 // Deallocate the columns
-       free(myData);
+       free(mat->data);
        free(mat);
     
 }
