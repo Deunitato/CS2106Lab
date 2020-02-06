@@ -8,9 +8,12 @@
 int power(int, int);
 
 
+
+
 // implementation
 matrix *create_matrix(int num_rows, int num_cols)
 {   
+
     matrix *newMat;
     //newMat = (matrix*)malloc(sizeof(int) * num_cols *num_cols);
     newMat = (matrix*)malloc(sizeof(matrix));
@@ -38,9 +41,11 @@ matrix *create_matrix(int num_rows, int num_cols)
     // TODO
     return newMat;
 }
+
 void add_row(matrix *mat, int *row)
 {
     // TODO
+	// TODO
     //add more rows to current matrix
      int** newData = (int**)malloc((mat->num_rows +1)*sizeof(int*));
      int** arr = mat->data;
@@ -74,7 +79,7 @@ void add_row(matrix *mat, int *row)
 void add_col(matrix *mat, int *col)
 {
     // TODO
-     int** arr = mat->data;
+	int** arr = mat->data;
      int num_rows = mat->num_rows;
      int num_cols = mat->num_cols;
      int** newData = (int**)malloc((mat->num_rows)*sizeof(int*));;
@@ -96,47 +101,45 @@ void add_col(matrix *mat, int *col)
        mat->num_cols = num_cols + 1; //increase
 }
 
-
 void increment(matrix *mat, int num)
 {
     // TODO
+	    // TODO
     int** myData = mat->data;
     for(int i = 0; i < (mat->num_rows) ; i++){
         for(int j =0 ; j < (mat-> num_cols) ; j++){
             myData[i][j] = myData[i][j] + num;
         }
     }
-
 }
 
 void scalar_multiply(matrix *mat, int num)
 {
     // TODO
+	    // TODO
     int** myData = mat->data;
     for(int i = 0; i < (mat->num_rows) ; i++){
         for(int j =0 ; j < (mat-> num_cols) ; j++){
             myData[i][j] = myData[i][j] * num;
         }
     }
-
 }
 
 void scalar_divide(matrix *mat, int num)
 {
     // TODO
-    int** myData = mat->data;
+	    int** myData = mat->data;
     for(int i = 0; i < (mat->num_rows) ; i++){
         for(int j =0 ; j < (mat-> num_cols) ; j++){
             myData[i][j] = myData[i][j] / num;
         }
     }
-
 }
 
 void scalar_power(matrix *mat, int num)
 {
     // TODO
-     int** myData = mat->data;
+	     int** myData = mat->data;
     for(int i = 0; i < (mat->num_rows) ; i++){
         for(int j =0 ; j < (mat-> num_cols) ; j++){
             myData[i][j] = power(num, myData[i][j]);
@@ -155,12 +158,12 @@ int power(int pow, int num){
     }
     return ans;
     
-}
+}	
 
 void delete_matrix(matrix *mat)
 {
     // TODO
-
+	
     int rows = mat->num_rows;
     for(int i = 0 ; i < rows ; i++){
        free(mat->data[i]);
@@ -171,11 +174,17 @@ void delete_matrix(matrix *mat)
        free(mat);
     
 }
-/*
-void element_wise_op(matrix *mat, int num, void *op_tr(int *, int))
+
+void element_wise_op(matrix *mat, int num, void (*op_ptr)(int *, int))
 {
     // TODO
-}*/
+	    int** myData = mat->data;
+    for(int i = 0; i < (mat->num_rows) ; i++){
+        for(int j =0 ; j < (mat-> num_cols) ; j++){
+             (op_ptr)(&(myData[i][j]), num);
+        }
+    }
+}
 
 /*
     DO NOT MODIFY BELOW
@@ -183,7 +192,7 @@ void element_wise_op(matrix *mat, int num, void *op_tr(int *, int))
 // print out matrix in row-major order
 // elements in the same row are space-separated
 // each row starts in a new line
-void print_matrix(matrix* mat) 
+void print_matrix(matrix *mat) 
 {
     int row_idx, col_idx;
     for(row_idx = 0; row_idx < mat->num_rows; ++row_idx) {

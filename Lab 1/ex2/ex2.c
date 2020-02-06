@@ -11,6 +11,10 @@
 
 // parse input stream and perform corresponding matrix operation on input mat
 // assume input stream is fully correct
+void increment_single(int *x, int y)
+{
+(*x) += y;
+}
 void run() 
 {
 	while(1) {
@@ -31,13 +35,13 @@ void run()
                 free(parameters);
                 break;
             case ADD_ROW:
-                parameters = (int *) malloc(sizeof(int) * 2);
+                parameters = (int *) malloc(sizeof(int) * mat->num_cols);
                 read_numbers(parameters, mat->num_cols);
                 add_row(mat, parameters);
                 free(parameters);
                 break;
             case ADD_COL:
-                parameters = (int *) malloc(sizeof(int) * 2);
+                parameters = (int *) malloc(sizeof(int) * mat->num_rows);
                 read_numbers(parameters, mat->num_rows);
                 add_col(mat, parameters);
                 free(parameters);
@@ -45,7 +49,9 @@ void run()
             case INCREMENT:
                 parameters = (int *) malloc(sizeof(int));
                 read_numbers(parameters, 1);
-                increment(mat, parameters[0]);
+               // increment(mat, parameters[0]);
+               void (*sendHelp)(int*, int) = increment_single;
+               element_wise_op(mat,parameters[0],sendHelp);
                 free(parameters);
                 break;
             case SCALAR_MULTIPLY:
@@ -67,7 +73,7 @@ void run()
                 free(parameters);
                 break;
             case DELETE_MATRIX:
-                free(mat);
+                delete_matrix(mat);
                 break;
             default:
                 fprintf(stderr, "Invalid instruction\nTerminating...\n");
