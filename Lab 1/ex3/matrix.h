@@ -18,5 +18,5 @@ void scalar_multiply(matrix *mat, int num);
 void scalar_divide(matrix *mat, int num);
 void scalar_power(matrix *mat, int num);
 void delete_matrix(matrix *mat);
-void element_wise_op(matrix *mat, int num, void *op_ptr(int *, int));
-void print_matrix(matrix * mat); // implemented for you
+void element_wise_op(matrix *mat, int num, void (*op_ptr)(int *, int));
+void print_matrix(matrix *mat); // implemented for you

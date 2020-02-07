@@ -128,7 +128,7 @@ Refernces:
 void my_run() 
 {
     // TODO
-    matrix *(*sendHelp0)(matrix*) = wrapper_print;
+    matrix *(*sendHelp0)(matrix*) = wrapper_del;
     matrix *(*sendHelp1)(matrix*) = wrapper_MakeMat;
     matrix *(*sendHelp2)(matrix*) = wrapper_addRow;
     matrix *(*sendHelp3)(matrix*) = wrapper_addCol;

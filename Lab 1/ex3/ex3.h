@@ -18,4 +18,4 @@
 #define DELETE_MATRIX 8
 
 void my_run();
-void read_numbers(int * buffer, int num_items_to_read); // implemented for you
+void read_numbers(int *buffer, int num_items_to_read); // implemented for you
