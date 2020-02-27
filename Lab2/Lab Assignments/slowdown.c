@@ -33,14 +33,6 @@ int main(int argc, char *argv[]) {
     goto usage;
   }
 
-  // Remove the following debug prints from your solution
-  printf("slow_factor=%d; tick_interval=%d\n",
-         slow_factor, tick_interval);
-  printf("exec argv=[");
-  for (int i = optind; i < argc; ++i) {
-    printf("\"%s\", ", argv[i]);
-  }
-  printf("\b\b]\n");
   // End debug prints
   // Your code here
   /* Charlotte's algo planning (slowDown)
@@ -61,7 +53,7 @@ int main(int argc, char *argv[]) {
    int nums = argc;
 
    char *leftArgs[100];
-  for (int index = optind; index < nums; index++){
+  for (int index = optind; index < nums; index++){ //copies args
     leftArgs[i] = argv[index];
     i++;
   }

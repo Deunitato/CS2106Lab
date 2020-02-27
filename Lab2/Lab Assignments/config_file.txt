@@ -1,0 +1,5 @@
+1
+./delayTest 100000
+./labtest 100000
+./delayTest 100000
+./delayTest 100

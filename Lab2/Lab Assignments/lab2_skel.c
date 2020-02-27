@@ -1,6 +1,10 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <sys/types.h>
+#include <signal.h>
+#include <sys/wait.h>
+
 
 int main(int argc, char *argv[]) {
   int slow_factor = 1, tick_interval = 10000;
@@ -18,7 +22,7 @@ int main(int argc, char *argv[]) {
     }
   }
 
-  if (opt >= argc) {
+  if (optind >= argc) {
     goto usage;
   }
 
@@ -26,13 +30,12 @@ int main(int argc, char *argv[]) {
   printf("slow_factor=%d; tick_interval=%d\n",
          slow_factor, tick_interval);
   printf("exec argv=[");
-  for (int i = opt; i < argc; ++i) {
+  for (int i = optind; i < argc; ++i) {
     printf("\"%s\", ", argv[i]);
   }
   printf("\b\b]\n");
   // End debug prints
-
-
+  // Your code here
 
   return 0;
 usage:
