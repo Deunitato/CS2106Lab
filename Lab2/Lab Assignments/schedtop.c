@@ -53,8 +53,8 @@ int recalculateProp(int arr[], int size){
   for(int i = 0 ; i < size ; i ++){
     double d =  (arr[i]/newTotal) *100;
     arr[i] = roundOff(d);
-    //printf("The value of d is %lf\n",d );
-    //printf("\nThe rewritten prop for %d is %d \n",i,arr[i]);
+    printf("The value of d is %lf\n",d );
+    printf("\nThe rewritten prop for %d is %d \n",i,arr[i]);
   }
   return 1;
 
@@ -118,6 +118,17 @@ int main(int argc, char *argv[]) {
     schedulees[schedulees_count++] = schedulee;
   }
 
+  // Remove the following debug prints from your solution
+  printf("u_interval=%d\n", u_interval);
+  for (size_t i = 0; i < schedulees_count; ++i) {
+    schedulee_t *schedulee = schedulees[i];
+    printf("schedulee %zu: %d%%\n  argv: [", i, schedulee->proportion);
+    for (size_t j = 0; schedulee->argv[j] != NULL; ++j) {
+      printf("\"%s\", ", schedulee->argv[j]);
+    }
+    printf("\b\b]\n");
+  }
+  // End debug prints
 
   // Your code here
   

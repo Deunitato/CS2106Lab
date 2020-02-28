@@ -1,5 +1,5 @@
 1
-./delayTest 100000
-./labtest 100000
-./delayTest 100000
-./delayTest 100
+23 ./delayTest 1000
+20 ./delayTest 1000
+20 ./delayTest 1000
+37 ./labtest 1000
