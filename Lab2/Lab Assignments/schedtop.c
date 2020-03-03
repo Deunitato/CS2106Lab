@@ -8,15 +8,22 @@
 #include <string.h>
 #include <ctype.h>
 #include <math.h>
+#include <time.h>
 
 #include <sched.h>
 
-void deleteElement(pid_t arr[], int size, int c) 
-{ 
-  for(int i =c ; i< size-1; i++){
-    arr[i] = arr[i+1];
-  }
-} 
+typedef struct schedulee {
+  pid_t pid; //<=================Ex5
+  int proportion;
+  double time; //<===============Ex5
+  char **argv;
+} schedulee_t;
+schedulee_t *make_schedulee(int, const char *);
+void free_schedulee(schedulee_t *);
+
+time_t entire_t;
+int totalTime;
+int numberOfProgs;
 
 int roundOff(double d){
   int test = d * 10; //check for 1sf
@@ -27,11 +34,50 @@ int roundOff(double d){
   else{
     return (int)d;
   }
-
-
 }
 
-void deleteProp(int arr[], int size, int c) 
+/*
+PID COMMAND TIME %CPU
+23241 ./testprog1 11231 43
+12321 ./testprog2 5237 20
+21231 ./testprog3 9712 37
+*/
+
+//Prints out the stuff based on what is given.. assumes that arrays are correct
+void printTOP(schedulee_t **arr, int size){ //<==============Ex5
+  printf("\nPID       COMMAND       TIME     CPU\n");
+  
+  for(int i =0 ; i < size ; i++){
+    schedulee_t *schedulee = arr[i];
+    pid_t pid = schedulee-> pid;
+    double time = schedulee-> time;
+    int cpu = time/totalTime *100;
+    char* name = (schedulee->argv)[0];
+
+
+    printf("%d     %s      %d     %d\n", pid,name,roundOff(time),cpu);
+  }
+}
+
+
+void deleteElement(pid_t arr[], int size, int c) 
+{ 
+  for(int i =c ; i< size-1; i++){
+    arr[i] = arr[i+1];
+  }
+} 
+
+void deleteStruct(schedulee_t **arr, int size, int c) //<================ Ex5
+{ 
+  for(int i =c ; i< size-1; i++){
+    arr[i] = arr[i+1];
+  }
+} 
+
+
+
+
+void deleteIntArr(int arr[], int size, int c) 
 { 
   for(int i =c ; i< size-1; i++){
     arr[i] = arr[i+1];
@@ -60,24 +106,31 @@ int recalculateProp(int arr[], int size){
 
 }
 
-typedef struct schedulee {
-  int proportion;
-  char **argv;
-} schedulee_t;
-schedulee_t *make_schedulee(int, const char *);
-void free_schedulee(schedulee_t *);
+
+void setTime(struct schedulee *s,clock_t end_t, clock_t start_t){
+  double newTimed= ((double) end_t - start_t)/CLOCKS_PER_SEC * 1000;
+  double prevTime = s->time;
+  s->time = newTimed + prevTime; //set new time
+  totalTime = totalTime + newTimed;
+}
+
+
 
 int main(int argc, char *argv[]) {
   int exit_code = 0;
   int u_interval = 100, n_cores = 1;
+  int time_interval = 1000;
   char opt;
-  while ((opt = getopt(argc, argv, "u:")) != -1) {
+  while ((opt = getopt(argc, argv, "u:i:")) != -1) {
     switch (opt) {
     case 'u':
       u_interval = atoi(optarg);
       break;
+    case 'i':
+     time_interval = atoi(optarg);
+      break;
     default:
-      fprintf(stderr, "Usage: %s [-u U] < config_file\n", argv[0]);
+      fprintf(stderr, "Usage: %s [-u U] [-i I] < config_file\n", argv[0]);
       return 1;
     }
   }
@@ -132,7 +185,7 @@ int main(int argc, char *argv[]) {
 
   // Your code here
   
-  //Setting up cores ===============================================
+//Setting up cores =================================================================================
 
 cpu_set_t set; 
 
@@ -146,13 +199,16 @@ CPU_SET(0, &set); //set one
 CPU_ZERO(&set); //clear the cores set
 CPU_SET(1, &set); //set one
 
-//============================================================================
+//==============================================================================================================
 
-//Set up array of proportion
+//Set up arrays
 int propArr[schedulees_count];
-
-//SET UP CHILD PROCESSES========================================
 pid_t PIDarray[schedulees_count];
+char* commandArray[schedulees_count];
+
+
+//SET UP CHILD PROCESSES========================================================================================
+
 for(int i =0 ; i< schedulees_count; i ++){
   pid_t CHILDPID = fork(); //create that many child
   schedulee_t *schedulee = schedulees[i]; //seg
@@ -164,7 +220,14 @@ for(int i =0 ; i< schedulees_count; i ++){
   }
   else if(CHILDPID >0){ //parent
     PIDarray[i] = CHILDPID;
+
+
+    schedulee->pid = CHILDPID; //S<==================================================EX5)
+    schedulee->time = 0;
     propArr[i] = schedulee->proportion; //set the array
+    commandArray[i] = schedulee->argv[0];
+
+
     if (sched_setaffinity(CHILDPID, sizeof(set), &set) == -1) //set my child to one core
                    printf("sched_setaffinity");
   }
@@ -173,43 +236,58 @@ for(int i =0 ; i< schedulees_count; i ++){
     return 1;
   }
 }
-//=========================================
+//======================================================================
 
+
+
+//DEBUG AREA!
 /*for(int i =0 ; i < schedulees_count; i++){
   printf("\nThe prop for %d is %d\n",i, propArr[i]);
 }*/
 
 
-//==============================================
+//==========================================================================================
 int progIndex = 0;
 pid_t currentProg;
-int numberOfProgs = schedulees_count;
+numberOfProgs = schedulees_count;
 int currentProp;
 currentProg = PIDarray[progIndex]; //points to first prog
 currentProp = propArr[progIndex];
 int status;
+//start the clock
+totalTime = 0;
+
 while(1){
         if(waitpid(currentProg,&status,WNOHANG)==currentProg){ //it did terminate
          //remove the prog from my index
+          printTOP(schedulees, numberOfProgs);
           deleteElement(PIDarray,numberOfProgs,progIndex);
-          deleteProp(propArr,numberOfProgs,progIndex); //delete my prop
+          deleteIntArr(propArr,numberOfProgs,progIndex); //delete my prop
+          deleteStruct(schedulees, numberOfProgs,progIndex);
           numberOfProgs--;
           if(numberOfProgs==0){break;}
           int total = recalculateProp(propArr,numberOfProgs);
           if(total==0){break;} //there is no more programs :)
-           // printf("\n%d Just ended\n", numberOfProgs);
+
+
             progIndex++; //go next
              if(progIndex>=numberOfProgs){progIndex=0;} //ensure doesnt go out of bound
              currentProg = PIDarray[progIndex];
              currentProp = propArr[progIndex];
         }
 
-        
+        clock_t end_t;
+        clock_t start_t;
+        start_t = clock();
         kill(currentProg, SIGCONT); //continue
        // printf("I am running");
         sleep((u_interval*(currentProp/100))/100); //i sleep
+        
         kill(currentProg, SIGSTOP); //stop
        // printf("I am just stop");
+        end_t = clock();
+       setTime(schedulees[progIndex],end_t , start_t);
+       
 
         //move to next
         progIndex++; //go next
@@ -218,6 +296,7 @@ while(1){
         currentProp = propArr[progIndex];
 }
 //==================================================================
+
 
 goto exit;
 invalid_config:
