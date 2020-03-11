@@ -19,7 +19,7 @@ void initialise(rw_lock* lock)
 
 void writer_acquire(rw_lock* lock)
 {
-  pthread_mutex_lock(&(lock->letmeINNNN));
+  pthread_mutex_lock(&(lock->letmeINNNN)); //if there is writer waiting
   pthread_mutex_lock(&(lock->sharedMutex));
   lock->writer_count++;
   //pthread_mutex_unlock(&(lock->mutex));
@@ -35,8 +35,6 @@ void writer_release(rw_lock* lock)
 
 void reader_acquire(rw_lock* lock) //reader tries to
 {
-
-  
   /*if(lock->writer_count > 0){
     pthread_mutex_lock(&(lock->letmeINNNN)); //let writer write
     pthread_mutex_lock(&(lock->sharedMutex));
