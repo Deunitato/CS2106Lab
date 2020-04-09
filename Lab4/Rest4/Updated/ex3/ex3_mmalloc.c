@@ -53,38 +53,7 @@ void printMetaPartList(partMetaInfo* bmiPtr)
 //prints some statistics about our heap
 void printHeapStatistics()
 {
-   printf("Heap Usage Statistics\n");
-	printf("===============\n");
-    
-    //TODO: calculate and print the releavant information
-    partMetaInfo* pmi = hmi.base;
-	int holeCount =0;
-	int holeTotalsize = 0;
-	int occupiedSize =0;
-	int occupiedCount =0;
-	
-
-	do{
-		if(pmi->status == FREE){ //if its empty
-		holeCount++;
-		holeTotalsize = holeTotalsize + pmi->size;
-	
-		}
-		else{ //not empty
-		occupiedCount++;
-		occupiedSize = occupiedSize + pmi->size;
-		}
-		pmi = pmi->nextPart;
-	}
-	while(pmi!=NULL);
-
-    printf("Total Space: %d bytes\n", hmi.totalSize);
-    printf("Total Occupied Partitions: %d\n", occupiedCount);
-    printf("\tTotal Occupied Size: %d bytes\n", occupiedSize);
-    printf("Total Number of Holes: %d\n", holeCount);
-    printf("\tTotal Hole Size: %d bytes\n", holeTotalsize);
-    printf("Total Meta Information Size: %d bytes\n", hmi.totalSize - (occupiedSize + holeTotalsize)); //should be same as metasize * (total partitions)
-
+    //TODO: Copy from ex2 if you want 
 }
 
 //print the whole heap
@@ -120,18 +89,33 @@ void splitPart(partMetaInfo *bigPart, int size)
     bigPart->size = size;
 }
 
-//returns an int
-int roundMultipleofFour(int number){
-	while(number%4 != 0){
-		number = number +1;
-	}
-	
-	 return number;
+//mallocHelper looks for the largest "Worst fit" mememory and return it.
+partMetaInfo* mallocHelper(int size){
+	partMetaInfo *save = NULL;
+	partMetaInfo *current = NULL;
+	int first = 1;
+
+		for (current = hmi.base; current != NULL; current = current->nextPart) {
+			if (current->status == OCCUPIED) continue; //current is occupied
+			if (current->size < size) continue; //current too small
+			if(first == 1){
+				save = hmi.base;
+				first =0;
+				continue;
+			}
+
+			if(current->size > save->size){ //save if the new one is larger than my current
+				save = current;
+				continue; //move to the next
+			}
+			break;    
+		}
+		return save;
 }
 
 void* mymalloc(int size)
 {
-	partMetaInfo *current = NULL;
+	
 
     // We need to make sure the size is word
     // aligned, i.e. if the word size is 4 bytes, the size need to be
@@ -145,26 +129,8 @@ void* mymalloc(int size)
     size = (size - 1) / 4 * 4 + 4;
     
     //TODO: Implement worst fit algorithm here instead of first-fit
-	partMetaInfo *save = NULL;
-	int first = 1;
-  
-    for (current = hmi.base; current != NULL; current = current->nextPart) {
-        if (current->status == OCCUPIED) continue; //current is occupied
-        if (current->size < size) continue; //current too small
-		if(first == 1){
-			save = hmi.base;
-			first =0;
-			continue;
-		}
-
-		if(current->size > save->size){ //save if the new one is larger than my current
-		   save = current;
-		   continue; //move to the next
-		}
-        break;    
-    }
-    
-    if (save == NULL) { //heap full
+  	partMetaInfo *save = mallocHelper(size);
+	  if (save == NULL) { //heap full
         return NULL;
     }
 

@@ -1,12 +1,14 @@
 /*************************************
-* Lab 4
-* Name: Charlotte Lim
-* Student No:A0185403J
-* Lab Group: 05
+* Lab 4 Exercise 6
+* Name:
+* Student No:
+* Lab Group:
 *************************************/
 
 #include <stdio.h>
 #include "mmalloc.h"
+#include "ex6_extra.h" 
+#include "string.h"
 
 //This is a "global" structure storing heap information
 //Only visible to functions in this file
@@ -38,7 +40,7 @@ int setupHeap(int initialSize)
 	return 1;
 }
 
-// print information about each node
+//print information about each node
 void printMetaPartList(partMetaInfo* bmiPtr)
 {
 	partMetaInfo* current = bmiPtr;
@@ -51,44 +53,9 @@ void printMetaPartList(partMetaInfo* bmiPtr)
 }
 
 //prints some statistics about our heap
-// • Number of occupied partition and the total size of occupied partition in bytes. Note that the
-// meta data of each partition is not counted.
-// • Number of free partition (a.k.a. holes) and the aggregate size of the holes in bytes.
-// • Total size of all metadata information in bytes.
 void printHeapStatistics()
 {
-    printf("Heap Usage Statistics\n");
-	printf("===============\n");
-    
-    //TODO: calculate and print the releavant information
-    partMetaInfo* pmi = hmi.base;
-	int holeCount =0;
-	int holeTotalsize = 0;
-	int occupiedSize =0;
-	int occupiedCount =0;
-	
-
-	do{
-		if(pmi->status == FREE){ //if its empty
-		holeCount++;
-		holeTotalsize = holeTotalsize + pmi->size;
-	
-		}
-		else{ //not empty
-		occupiedCount++;
-		occupiedSize = occupiedSize + pmi->size;
-		}
-		pmi = pmi->nextPart;
-	}
-	while(pmi!=NULL);
-
-    printf("Total Space: %d bytes\n", hmi.totalSize);
-    printf("Total Occupied Partitions: %d\n", occupiedCount);
-    printf("\tTotal Occupied Size: %d bytes\n", occupiedSize);
-    printf("Total Number of Holes: %d\n", holeCount);
-    printf("\tTotal Hole Size: %d bytes\n", holeTotalsize);
-    printf("Total Meta Information Size: %d bytes\n", hmi.totalSize - (occupiedSize + holeTotalsize)); //should be same as metasize * (total partitions)
-
+    //TODO: Copy from ex2 if you want 
 }
 
 //print the whole heap
@@ -121,7 +88,7 @@ void splitPart(partMetaInfo *bigPart, int size)
 	initializeMetaPartAt(holeAt, holeSize);
 	holeAt->nextPart = bigPart->nextPart;
 	bigPart->nextPart = holeAt;
-        bigPart->size = size;
+    bigPart->size = size;
 }
 
 void* mymalloc(int size)
@@ -139,16 +106,11 @@ void* mymalloc(int size)
     // of 4
     size = (size - 1) / 4 * 4 + 4;
     
-	for (current = hmi.base; current != NULL; 
-		  current = current->nextPart) {
-        if (current->status == OCCUPIED) continue;
-        if (current->size < size) continue;
-        break;    
-    }
+    //TODO: Copy your previous solution here 
     
-    if (current == NULL){	//heap full
-		return NULL;
-	}	
+    if (current == NULL) { //heap full
+        return NULL;
+    }
 
 	//Can we split the part? 
 	//The new "hole" should >= 4 bytes after placing in a new part
@@ -172,5 +134,13 @@ void myfree(void* address)
 	//For our lab, we assume the user always give a valid pointer ;-)
  	toBeFreed = address - hmi.partMetaSize;
 	toBeFreed->status = FREE;	//Question: Really this simple?
+
+    //TODO: Copy your previous solution here 
+}
+
+//do any clean up here
+void heapCleanUp() 
+{
+
 }
 
