@@ -1,8 +1,8 @@
 /*************************************
 * Lab 4 Exercise 4
-* Name:
-* Student No:
-* Lab Group:
+* Name: Charlotte Lim
+* Student No: A0185403J
+* Lab Group: 11 (JinYi class)
 *************************************/
 
 #include <stdio.h>
@@ -51,10 +51,40 @@ void printMetaPartList(partMetaInfo* bmiPtr)
 	}
 }
 
-//prints some statistics about our heap
 void printHeapStatistics()
 {
-    //TODO: Copy from ex2 if you want 
+    printf("Heap Usage Statistics\n");
+	printf("===============\n");
+    
+    //TODO: calculate and print the releavant information
+    partMetaInfo* pmi = hmi.base;
+	int holeCount =0;
+	int holeTotalsize = 0;
+	int occupiedSize =0;
+	int occupiedCount =0;
+	
+
+	do{
+		if(pmi->status == FREE){ //if its empty
+		holeCount++;
+		holeTotalsize = holeTotalsize + pmi->size;
+	
+		}
+		else{ //not empty
+		occupiedCount++;
+		occupiedSize = occupiedSize + pmi->size;
+		}
+		pmi = pmi->nextPart;
+	}
+	while(pmi!=NULL);
+
+    printf("Total Space: %d bytes\n", hmi.totalSize);
+    printf("Total Occupied Partitions: %d\n", occupiedCount);
+    printf("\tTotal Occupied Size: %d bytes\n", occupiedSize);
+    printf("Total Number of Holes: %d\n", holeCount);
+    printf("\tTotal Hole Size: %d bytes\n", holeTotalsize);
+    printf("Total Meta Information Size: %d bytes\n", hmi.totalSize - (occupiedSize + holeTotalsize)); //should be same as metasize * (total partitions)
+
 }
 
 //print the whole heap
@@ -102,24 +132,16 @@ void mergePart(partMetaInfo *part1, partMetaInfo *part2){
 
 //mallocHelper looks for the largest "Worst fit" mememory and return it.
 partMetaInfo* mallocHelper(int size){
-	partMetaInfo *save = NULL;
+	partMetaInfo *save = hmi.base;
 	partMetaInfo *current = NULL;
-	int first = 1;
 
 		for (current = hmi.base; current != NULL; current = current->nextPart) {
 			if (current->status == OCCUPIED) continue; //current is occupied
 			if (current->size < size) continue; //current too small
-			if(first == 1){
-				save = hmi.base;
-				first =0;
-				continue;
-			}
-
 			if(current->size > save->size){ //save if the new one is larger than my current
 				save = current;
 				continue; //move to the next
 			}
-			break;    
 		}
 		return save;
 }
@@ -144,9 +166,9 @@ void* mymalloc(int size)
 
 
 	if (save == NULL) { //heap full
-	    compact();
+	    /*compact();
 		save = mallocHelper(size);
-		if(save==NULL) return NULL;
+		if(save==NULL)*/ return NULL;
 	}
 
 	//Can we split the part? 
@@ -223,8 +245,8 @@ void compact()
 
 
 	//start merging
-	while(current->nextPart!=NULL){
-		if((current->nextPart)->status == OCCUPIED){ //if next is occupied
+	while(current!= NULL && current->nextPart!=NULL){
+		if((current->nextPart)->status == OCCUPIED && current->status == FREE){ //if current is free and next is occupied
 		   //move that occupied forward
 		   copySize = hmi.partMetaSize + (current->nextPart) ->size; //size of my occupied
 		   freeSize = hmi.partMetaSize + current->size; //size of my free
@@ -239,15 +261,25 @@ void compact()
 		   memmove(current, current->nextPart,copySize);
 		   
 		   
-		   freepointer = freepointer + copySize; //move the pointer to the next
+		   freepointer = freepointer + copySize; //move the pointer to the free part
+		   void* currNext = current->nextPart; 
+		
 		   current ->nextPart = freepointer; //reset the pointer to next
-
-		   //Merge the extra freed
+		   //init the free
 		   initializeMetaPartAt(freepointer, freeSize - hmi.partMetaSize);
+
+		   partMetaInfo *newPmi = freepointer; 
+		   
+		  // partMetaInfo *freePartionn = current->nextPart; 
+		   newPmi->nextPart = currNext; //free pointer next to be current's next
+		   current = freepointer;
+		   continue;
 		}
-		else { //the next is free
+		else if((current->nextPart)->status == FREE && current->status == FREE) { //the next is free
 		//merge the free together
 			mergePart(current,current->nextPart);
+			continue;
+			
 		}
 		current = current->nextPart;
 	}

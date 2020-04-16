@@ -1,8 +1,8 @@
 /*************************************
 * Lab 4 Exercise 2
-* Name:
-* Student No:
-* Lab Group:
+* Name: Charlotte Lim
+* Student No: A0185403J
+* Lab Group: 11 (JinYi class)
 *************************************/
 
 #include <stdio.h>

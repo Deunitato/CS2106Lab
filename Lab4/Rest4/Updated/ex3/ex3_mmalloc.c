@@ -1,8 +1,8 @@
 /*************************************
 * Lab 4 Exercise 3
-* Name:
-* Student No:
-* Lab Group:
+* Name: Charlotte Lim
+* Student No: A0185403J
+* Lab Group: 11 (JinYi class)
 *************************************/
 
 #include <stdio.h>
@@ -91,24 +91,16 @@ void splitPart(partMetaInfo *bigPart, int size)
 
 //mallocHelper looks for the largest "Worst fit" mememory and return it.
 partMetaInfo* mallocHelper(int size){
-	partMetaInfo *save = NULL;
+	partMetaInfo *save = hmi.base;
 	partMetaInfo *current = NULL;
-	int first = 1;
 
 		for (current = hmi.base; current != NULL; current = current->nextPart) {
 			if (current->status == OCCUPIED) continue; //current is occupied
 			if (current->size < size) continue; //current too small
-			if(first == 1){
-				save = hmi.base;
-				first =0;
-				continue;
-			}
-
 			if(current->size > save->size){ //save if the new one is larger than my current
 				save = current;
 				continue; //move to the next
 			}
-			break;    
 		}
 		return save;
 }
