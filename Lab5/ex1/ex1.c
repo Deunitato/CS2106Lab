@@ -1,8 +1,8 @@
 /*************************************
 * Lab 5 Exercise 1
-* Name:
+* Name: Charlotte Lim	
 * Student No:
-* Lab Group:
+* Lab Group: 11
 *************************************/
 
 #include <stdio.h>
@@ -28,10 +28,97 @@ void print_as_text(uint8_t *data, int size)
 }
 
 //TODO: Add helper functions if needed
+// removes all the . 
+/*char* makeFileName(char* name){
+	//check first 8 char
+	char namde[10];
+	//count occupied
+	for(int i = 0 ; i < 8 ; i ++){
+		if(name[i] != NULL){
+
+		}
+
+	}
+
+}*/
+
+
+void  makeSaveName(char* name, char* charReturn){
+	char newname[8];
+	char extension[3];
+	int nameCount = 0;
+	int extensionCount = 0;
+	int reachExt = 0;
+	//count occupied
+	for(int i = 0 ; i < strlen(name) ; i ++){
+		if((name[i] == NULL) || name[i] == ' ') continue; //empty
+
+		if(name[i] == '.'){ //reach extension
+		reachExt = 1;
+		continue;
+		}
+
+		if(reachExt == 1){ //extension
+			extension[extensionCount] = name[i];
+			extensionCount++;
+			continue;
+		}
+		else{
+			newname[nameCount] = name[i];
+			nameCount++;
+		}
+
+	}
+	int j =0;
+	//make the name here
+	char returnName[12];
+	for(int i = 0 ; i < 8; i ++){ //write the title here
+		if(i < (8 - nameCount)){
+         returnName[i] = ' '; 
+		 continue;
+		}
+		
+		returnName[i] = newname[j];
+		j ++;
+	}
+
+	for(int i = 8; i < 11; i ++){//add extension name here
+	    if((i-8)<extensionCount){
+			returnName[i] = extension[i-8];
+			continue;
+		}
+		else{
+			returnName[i] = ' ';
+		}
+	}
+	returnName[11] = '\0';
+	//printf("SaveName:%s\n", returnName);
+	
+	strcpy(charReturn,returnName);
+
+}
 
 int read_file( FAT_RUNTIME* rt, char filename[])
 {
     //TODO: Your code here
+	//trim the file name:
+
+	int sectors = 8;
+	FAT_DE *deArr = rt->dir_buffer;
+	char tempName[12];
+
+	makeSaveName(filename,tempName);
+
+	//printf("The file:%s, with length %ld", tempName , strlen(tempName));
+	for(int i = 0 ; i < sectors ; i ++){ //loop
+	  char* name = (deArr + i) -> name;
+	  //printf("\nThename: ");
+	  //printf("%s, with length %ld",name , strlen(name));
+	  if(strncmp(name, tempName, strlen(tempName)) == 0){
+		  return 1;
+	  }
+
+	}
 
 	return 0;	
 }
@@ -64,7 +151,7 @@ int main(int argc, char** argv)
 		if(!read_file( &fat_rt, filename)){
 			printf("\"%s\" not found!\n", filename);
 		} else {
-            printf("\n");   //additional newline for readability
+            printf("FILEREAD\n");   //additional newline for readability
         }
 
 		print_directory(fat_rt.dir_buffer);
