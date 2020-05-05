@@ -115,6 +115,31 @@ int read_file( FAT_RUNTIME* rt, char filename[])
 	  //printf("\nThename: ");
 	  //printf("%s, with length %ld",name , strlen(name));
 	  if(strncmp(name, tempName, strlen(tempName)) == 0){
+		  //256 bytes for each sector
+		  //uint32_t sector_size = S_SECTOR_SIZE/4;
+		  uint32_t fileSize = (deArr+i)->file_size;
+		  uint16_t pointerSector = (deArr+i)->start_sector;
+		  
+
+		  do{
+			  uint8_t buffer[S_SECTOR_SIZE];
+			  read_data_sector(rt->media_f,pointerSector,buffer);
+			  if(fileSize >= S_SECTOR_SIZE){
+				  
+				  print_as_text(buffer,S_SECTOR_SIZE);
+			  }
+			  else{
+				  print_as_text(buffer,fileSize);
+			  }
+			  if(fileSize > 0){ 
+				  pointerSector = (rt->fat)[pointerSector];
+				  if(pointerSector == FE_END) break;
+				  }
+			  fileSize = fileSize - S_SECTOR_SIZE/4; // decrement sector size
+		  }while(fileSize > 0);
+
+		  
+		  //print_as_text((deArr+i)->start_sector,(deArr+i)->file_size);
 		  return 1;
 	  }
 
@@ -151,7 +176,7 @@ int main(int argc, char** argv)
 		if(!read_file( &fat_rt, filename)){
 			printf("\"%s\" not found!\n", filename);
 		} else {
-            printf("FILEREAD\n");   //additional newline for readability
+            printf("\n");   //additional newline for readability
         }
 
 		print_directory(fat_rt.dir_buffer);
