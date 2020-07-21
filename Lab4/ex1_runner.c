@@ -29,7 +29,7 @@ sem_t mutex;
 custom_lock* lock;
 
 //to keep time
-const int TIME_INTERVAL = 5000;
+const int TIME_INTERVAL = 1000;
 
 //for error message
 const char* MEMORY_ERROR = "Failed to allocate memory\n";

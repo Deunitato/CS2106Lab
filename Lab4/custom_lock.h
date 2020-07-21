@@ -1,8 +1,8 @@
 /*************************************
  * Lab 4 Exercise 1
- * Name: 
- * Student No:
- * Lab Group:
+ * Name:  Charlotte Lim
+ * Student No:A0185403J
+ * Lab Group: B05
  **************************************/
 
 #include <semaphore.h>

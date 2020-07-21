@@ -1,8 +1,8 @@
 /*************************************
  * Lab 4 Exercise 1
- * Name: 
- * Student No:
- * Lab Group:
+ * Name:  Charlotte Lim
+ * Student No:A0185403J
+ * Lab Group:B05
  **************************************/
 #include <stdlib.h>
 #include <stdio.h>
@@ -42,7 +42,7 @@ void initialise(custom_lock* lock) {
 //we want the thread to be added to our semaphore here
 void wait(custom_lock* lock) {
 
-
+    //Wait for everything here
     int currentindex = lock -> index; //we know that they will not write at the same time
     //printf("Being wait: %d\n",currentindex);
     int next = currentindex + 1;
@@ -58,6 +58,7 @@ void notify_all(custom_lock* lock) {
 
     //modify here
     int i;
+    //go backwards by allowing the last one to be release first
     for (i = lock->max_threads -1 ; i >=0 ; i--) {
     sem_post(&(lock->semaArr)[i]); //n wake up, where n is my current thread starting from back
     //wait for this value to be written before moving on
